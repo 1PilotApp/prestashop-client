@@ -1,8 +1,5 @@
 
-# 1pilot remote beta
-external ajax input
-- url de test: domain.com/modules/onepilot/ajax.php?key={yourkey}
 
-regula
-- url de test: domain.com/modules/onepilot/ajax.php?key={yourkey}
-
+https://myshop.com/?fc=module&module=onepilot&controller=validate
+https://myshop.com/?fc=module&module=onepilot&controller=ping
+https://myshop.com/?fc=module&module=onepilot&controller=mailtester
