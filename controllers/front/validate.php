@@ -11,7 +11,7 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
     {
         parent::init();
         \OnePilot\Middlewares\Handler::register();
-        // \OnePilot\Middlewares\Authentication::register();
+        \OnePilot\Middlewares\Authentication::register();
 
         $return = [
             'core'    => _PS_VERSION_,
@@ -34,22 +34,24 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
         $modules = Module::getModulesOnDisk();
 
         foreach ($modules as $module) {
-            if ($module->active) {
-
-                $new_version = null;
-                if ($module->version < $module->database_version) {
-                    $new_version = $module->database_version;
-
-                }
-                $activeModules[] = [
-                    "version"     => $module->version,
-                    "new_version" => $new_version,
-                    "name"        => $module->displayName,
-                    "code"        => $module->name,
-                    "type"        => "plugin",
-                    "active"      => $module->active,
-                ];
+            if (!$module->active) {
+                continue;
             }
+
+            $new_version = null;
+            if ($module->version < $module->database_version) {
+                $new_version = $module->database_version;
+            }
+
+            $activeModules[] = [
+                "version"     => $module->version,
+                "new_version" => $new_version,
+                "name"        => $module->displayName,
+                "code"        => $module->name,
+                "type"        => "plugin",
+                "active"      => $module->active,
+            ];
+
         }
 
         return $activeModules;
