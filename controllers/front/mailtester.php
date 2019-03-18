@@ -108,7 +108,7 @@ EOF;
             'Test send by 1Pilot.io for ensure emails are properly sent', // email subject
             array(
                 '{email}' => Configuration::get('PS_SHOP_EMAIL'),
-                '{message}' => $message
+                '{message}' => nl2br($message)
             ),
             $email, // receiver email address
             '1Pilot', //receiver name
