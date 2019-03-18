@@ -13,18 +13,13 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
 
-        $return = [
+        \OnePilot\Response::make([
             'core'    => _PS_VERSION_,
             'update'  => null,
             'plugins' => $this->getExtensions(),
             'servers' => $this->getServers(),
             'files'   => $this->getFilesProperties(),
             'extra'   => $this->getExtras(),
-        ];
-
-        \OnePilot\Response::make([
-            'success' => true,
-            'message' => $return,
         ]);
     }
 
@@ -64,7 +59,7 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
         return
             [
                 'php'     => phpversion(),
-                'servers' => $serverWeb,
+                'server'  => $serverWeb,
                 'mysql'   => Db::getInstance()->executeS("SHOW VARIABLES LIKE 'version'")[0]['Value'],
             ];
     }
@@ -76,17 +71,19 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
 
         //files to check
         $files = [
-            _PS_ROOT_DIR_ . '/index.php',
+            'index.php',
+            '.htaccess',
         ];
 
         foreach ($files as $file) {
-            // if the file exists
-            if (file_exists($file)) {
-                $fp = fopen($file, 'r');
+            $absolutePath = _PS_ROOT_DIR_ . '/' . $file;
+            
+            if (file_exists($absolutePath)) {
+                $fp = fopen($absolutePath, 'r');
                 $fstat = fstat($fp);
                 fclose($fp);
-                $checksum = md5_file($file);
-            } elseif ($file != JPATH_ROOT . '/.htaccess') { //If not, we say that the file can't be found
+                $checksum = md5_file($absolutePath);
+            } elseif ($file != _PS_ROOT_DIR_ . '/.htaccess') { //If not, we say that the file can't be found
                 $checksum = $fstat['size'] = $fstat['mtime'] = 'NOT_FOUND';
             }
             $file = [
@@ -106,10 +103,9 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
     {
         $context = Context::getContext();
 
-        return
-            [
-                'debug_mode'      => _PS_MODE_DEV_,
-                'cms.activeTheme' => $context->shop->theme_name,
-            ];
+        return [
+            'debug_mode'      => _PS_MODE_DEV_,
+            'cms.activeTheme' => $context->shop->theme_name,
+        ];
     }
 }
