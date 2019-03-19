@@ -15,7 +15,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
     {
 
         \OnePilot\Middlewares\Handler::register();
-        //\OnePilot\Middlewares\Authentication::register();
+        \OnePilot\Middlewares\Authentication::register();
 
         parent::init();
 
