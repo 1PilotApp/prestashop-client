@@ -62,8 +62,7 @@ class Onepilot extends Module
      */
     public function install()
     {
-        return parent::install() &&
-            $this->registerHook('backOfficeHeader');
+        return parent::install();
     }
 
     public function uninstall()
@@ -141,6 +140,26 @@ class Onepilot extends Module
                         'name' => 'ONE_PILOT_API_KEY',
                         'label' => $this->l('Api key'),
                     ),
+                    array(
+                        'col' => 3,
+                        'type' => 'switch',
+                        'is_bool' => true,
+                        'desc' => $this->l('Skip timestamp validation ?'),
+                        'name' => 'ONE_PILOT_SKIP_TIMESTAMP',
+                        'label' => $this->l('Skip timestamp'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No')
+                            )
+                        ),
+                    ),
 
                 ),
                 'submit' => array(
@@ -156,7 +175,8 @@ class Onepilot extends Module
     protected function getConfigFormValues()
     {
         return array(
-            'ONE_PILOT_API_KEY' => Configuration::get('ONE_PILOT_API_KEY', '')
+            'ONE_PILOT_API_KEY' => Configuration::get('ONE_PILOT_API_KEY', ''),
+            'ONE_PILOT_SKIP_TIMESTAMP' => Configuration::get('ONE_PILOT_SKIP_TIMESTAMP', 0)
         );
     }
 
@@ -169,17 +189,6 @@ class Onepilot extends Module
 
         foreach (array_keys($form_values) as $key) {
             Configuration::updateValue($key, Tools::getValue($key));
-        }
-    }
-
-    /**
-    * Add the CSS & JavaScript files you want to be loaded in the BO.
-    */
-    public function hookBackOfficeHeader()
-    {
-        if (Tools::getValue('module_name') == $this->name) {
-            $this->context->controller->addJS($this->_path.'views/js/back.js');
-            $this->context->controller->addCSS($this->_path.'views/css/back.css');
         }
     }
 

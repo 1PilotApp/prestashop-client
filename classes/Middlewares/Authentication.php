@@ -8,7 +8,6 @@ class Authentication
     private $hash;
     private $stamp;
     private $private_key;
-    private $params;
 
     public static function register()
     {
@@ -21,9 +20,8 @@ class Authentication
      */
     public function __construct()
     {
-        $this->hash = \Tools::getValue('HTTP_HASH');
-        $this->stamp = \Tools::getValue('HTTP_STAMP');
-
+        $this->hash = $_SERVER['HTTP_HASH'];
+        $this->stamp = $_SERVER['HTTP_STAMP'];
         $this->private_key = \Configuration::get('ONE_PILOT_API_KEY');
 
         $this->checkAuthentication();
@@ -66,7 +64,7 @@ class Authentication
      */
     private function validateTimestamp()
     {
-        if ($this->params->get('disable_timestamp', false)) {
+        if (\Configuration::get('ONE_PILOT_SKIP_TIMESTAMP')) {
             return;
         }
 

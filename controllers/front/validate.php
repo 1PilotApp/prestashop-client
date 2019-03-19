@@ -1,6 +1,4 @@
 <?php
-require_once(_PS_MODULE_DIR_ . 'onepilot/onepilot.php');
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -19,6 +17,7 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
             'plugins' => $this->getExtensions(),
             'servers' => $this->getServers(),
             'files'   => $this->getFilesProperties(),
+            'errors'  => (new \OnePilot\Errors())->overview(),
             'extra'   => $this->getExtras(),
         ]);
     }
