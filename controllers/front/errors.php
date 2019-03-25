@@ -8,11 +8,17 @@ use OnePilot\Response;
 class OnepilotErrorsModuleFrontController extends ModuleFrontController
 {
 
+
     /** @var int */
     const PAGINATION = 20;
 
     public function init()
     {
+        $levelArray = array(1=>'info',
+        2=> 'warning',
+        3=> 'error',
+        4=>'danger'
+        );
 
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
@@ -31,9 +37,12 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         if ($from) {
             $sql->where("date_add > $from");
+
         }
         if ($to) {
+            // rfaire recherche avec une objet date
             $sql->where("date_add > $to");
+
         }
         if ($levels) {
             $sql->where("severity in (" . implode(',', $levels) . ")");
@@ -48,7 +57,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
         $results = \Db::getInstance()->executeS($sql);
 
         Response::make([
-            'success' => true,
+
             'message' => $results,
         ]);
     }

@@ -18,7 +18,7 @@ class OnepilotPingModuleFrontController extends ModuleFrontController
         parent::init();
 
         Response::make([
-            'success' => true,
+
             'message' => 'pong'
         ]);
     }
