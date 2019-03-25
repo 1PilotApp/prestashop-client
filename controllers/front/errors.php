@@ -56,6 +56,10 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         $results = \Db::getInstance()->executeS($sql);
 
+        for($a = 0 ; $a< count($results); $a++){
+            $index = $results[$a]['level'];
+            $results[$a]['level'] = $levelArray[$index];
+        }
         Response::make([
 
             'message' => $results,
