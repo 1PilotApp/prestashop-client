@@ -7,19 +7,19 @@ use OnePilot\Response;
 
 class OnepilotErrorsModuleFrontController extends ModuleFrontController
 {
-
-
     /** @var int */
     const PAGINATION = 20;
 
+    /** @var array */
+    const LEVELS = array(
+        1 => 'info',
+        2 => 'warning',
+        3 => 'error',
+        4 => 'danger'
+    );
+
     public function init()
     {
-        $levelArray = array(1=>'info',
-        2=> 'warning',
-        3=> 'error',
-        4=>'danger'
-        );
-
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
 
@@ -36,17 +36,27 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
         $sql->from('log', 'l');
 
         if ($from) {
-            $sql->where("date_add > $from");
-
+            $dateFrom = date('Y-m-d H:i:s', strtotime($from));
+            $sql->where("date_add > '$dateFrom'");
         }
+
         if ($to) {
-            // rfaire recherche avec une objet date
-            $sql->where("date_add > $to");
+            $dateTo = date('Y-m-d H:i:s', strtotime($to));
+            $sql->where("date_add < '$dateTo'");
+        }
 
-        }
         if ($levels) {
-            $sql->where("severity in (" . implode(',', $levels) . ")");
+            $levelsIds = array();
+            foreach ($levels as $level) {
+                $index = array_search($level, self::LEVELS);
+                if ($index != false) {
+                    $levelsIds[] = $index;
+                }
+            }
+
+            $sql->where("severity in (" . implode(',', $levelsIds) . ")");
         }
+
         if ($search) {
             $sql->where("message like '%$search%'");
         }
@@ -56,13 +66,13 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         $results = \Db::getInstance()->executeS($sql);
 
-        for($a = 0 ; $a< count($results); $a++){
-            $index = $results[$a]['level'];
-            $results[$a]['level'] = $levelArray[$index];
+        foreach ($results as &$result) {
+            $index = $result['level'];
+            $result['level'] = self::LEVELS[$index];
         }
-        Response::make([
 
-            'message' => $results,
+        Response::make([
+            'data' => $results,
         ]);
     }
 
