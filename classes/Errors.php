@@ -30,7 +30,6 @@ class Errors
         $time = strtotime($dateToday);
         $time = $time - $minutes*60;
         $dateToday = date('Y-m-d H:i:s' , $time);
-        print_r($dateToday);
         $sql = new \DbQuery();
         $sql->select('severity,count(*) as count');
         $sql->from('log', 'l');
