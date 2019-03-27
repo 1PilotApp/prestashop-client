@@ -36,7 +36,6 @@ class OnepilotMailtesterModuleFrontController extends ModuleFrontController
         }*/
 
         Response::make([
-            'success' => true,
             'message' => 'Sent'
         ]);
 

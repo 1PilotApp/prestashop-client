@@ -27,10 +27,8 @@ class Errors
 
     private function last($minutes)
     {
-
-        $time = strtotime(date('Y-m-d H:i:s'));
-        $time = $time - ($minutes*60);
-        $dateToday = date('Y-m-d H:i:s' , $time);
+        $muchPast = time() - ($minutes * 60);
+        $dateToday = date('Y-m-d H:i:s' , $muchPast);
 
         $sql = new \DbQuery();
         $sql->select('severity,count(*) as count');
