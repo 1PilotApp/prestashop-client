@@ -26,10 +26,15 @@ class Errors
 
     private function last($minutes)
     {
+        $dateToday = date('Y-m-d H:i:s');
+        $time = strtotime($dateToday);
+        $time = $time - $minutes*60;
+        $dateToday = date('Y-m-d H:i:s' , $time);
+        print_r($dateToday);
         $sql = new \DbQuery();
         $sql->select('severity,count(*) as count');
         $sql->from('log', 'l');
-        $sql->where("date_add > NOW() - interval $minutes minute");
+        $sql->where("date_add > NOW() - $dateToday");
         $sql->groupBy('severity');
 
         $results = \Db::getInstance()->executeS($sql);
