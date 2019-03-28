@@ -7,6 +7,6 @@ class Response
         http_response_code($status);
         header('Content-Type: application/json');
 
-        exit(json_encode($data + ['status' => $status]));
+        exit(json_encode(['status' => $status] + $data  ));
     }
 }
