@@ -2,14 +2,19 @@
 
 class Errors
 {
-
-
     /** @var array intervals in minutes */
-    const INTERVALS = [
+    const LEVELS = array(
+        1 => 'info',
+        2 => 'warning',
+        3 => 'error',
+        4 => 'danger'
+    );
+
+    const INTERVALS = array(
         1 * 24 * 60,
         7 * 24 * 60,
         30 * 24 * 60,
-    ];
+    );
 
     /**
      * Return the log activity of the last day,week,month by Level
@@ -17,8 +22,9 @@ class Errors
      */
     public function overview()
     {
-        $overview = [];
+        $overview = array();
         foreach (self::INTERVALS as $interval) {
+
             $overview[$interval] = $this->last($interval);
         }
 
@@ -28,7 +34,7 @@ class Errors
     private function last($minutes)
     {
         $muchPast = time() - ($minutes * 60);
-        $dateToday = date('Y-m-d H:i:s' , $muchPast);
+        $dateToday = date('Y-m-d H:i:s', $muchPast);
 
         $sql = new \DbQuery();
         $sql->select('severity,count(*) as count');
@@ -38,9 +44,12 @@ class Errors
 
         $results = \Db::getInstance()->executeS($sql);
 
-        $logs = [];
+        $logs = array();
         foreach ($results as $result) {
-            $logs[$result['severity']] = (int)$result['count'];
+            $logs[] = array(
+                'level' => self::LEVELS[$result['severity']],
+                'total' => (int)$result['count']
+            );
         }
 
         return $logs;
