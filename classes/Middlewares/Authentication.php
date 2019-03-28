@@ -24,7 +24,7 @@ class Authentication
         $this->stamp = $_SERVER['HTTP_STAMP'];
         $this->private_key = \Configuration::get('ONE_PILOT_API_KEY');
 
-        //$this->checkAuthentication();
+        $this->checkAuthentication();
     }
 
     /**
