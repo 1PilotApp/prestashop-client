@@ -4,10 +4,10 @@ class Errors
 {
     /** @var array intervals in minutes */
     const LEVELS = array(
-        1 => 'info',
-        2 => 'warning',
-        3 => 'error',
-        4 => 'danger'
+        1 => 'Info',
+        2 => 'Warning',
+        3 => 'Error',
+        4 => 'Danger'
     );
 
     const INTERVALS = array(
