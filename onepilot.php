@@ -27,8 +27,9 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
+use OnePilot\Middlewares\Authentication;
 require_once 'autoloader.php';
+
 
 class Onepilot extends Module
 {
@@ -36,10 +37,9 @@ class Onepilot extends Module
 
     public function __construct()
     {
-
         $this->name = 'onepilot';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '0.0.1';
         $this->author = '1pilot';
         $this->need_instance = 1;
 
@@ -62,6 +62,7 @@ class Onepilot extends Module
      */
     public function install()
     {
+
         return parent::install();
     }
 
@@ -171,11 +172,14 @@ class Onepilot extends Module
 
     /**
      * Set values for the inputs.
+     * @throws \OnePilot\Exceptions\OnePilotException
      */
     protected function getConfigFormValues()
     {
+        $authentification = new Authentication();
+
         return array(
-            'ONE_PILOT_API_KEY' => Configuration::get('ONE_PILOT_API_KEY', ''),
+            'ONE_PILOT_API_KEY' => $authentification->getKey(),
             'ONE_PILOT_SKIP_TIMESTAMP' => Configuration::get('ONE_PILOT_SKIP_TIMESTAMP', 0)
         );
     }

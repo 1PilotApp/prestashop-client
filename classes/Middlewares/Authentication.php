@@ -22,9 +22,13 @@ class Authentication
     {
         $this->hash = $_SERVER['HTTP_HASH'];
         $this->stamp = $_SERVER['HTTP_STAMP'];
+        if(\Configuration::get('ONE_PILOT_API_KEY') == null){
+            $this->private_key = $this->createKey();
+        }
         $this->private_key = \Configuration::get('ONE_PILOT_API_KEY');
 
-      //  $this->checkAuthentication();
+
+        //$this->checkAuthentication();
     }
 
     /**
@@ -101,4 +105,18 @@ class Authentication
 
         return $status === 0;
     }
+    private function createKey(){
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randstring = '';
+        for ($i = 0; $i < 20; $i++) {
+            $randstring += $characters[rand(0, strlen($characters))];
+        }
+        return md5($randstring);
+
+    }
+    public function getKey(){
+        return $this->private_key;
+    }
+
 }
