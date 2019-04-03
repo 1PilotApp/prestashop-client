@@ -25,7 +25,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
     /** @var string date*/
     private $to;
     /** @var string */
-    private $levels;
+    private $levels = array();
     /** @var string */
     private $search;
     /** @var int */
@@ -89,13 +89,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         if ($this->levels) {
             //do a method
-            $levelsIds = array();
-            foreach ($this->levels as $level) {
-                $index = array_search($level, self::LEVELS);
-                if ($index != false) {
-                    $levelsIds[] = $index;
-                }
-            }
+            $levelsIds = $this->formatTextLevels();
 
             $sql->where("severity in (" . implode(',', $levelsIds) . ")");
         }
@@ -103,6 +97,16 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
         if ($this->search) {
             $sql->where("message like '%$this->search%'");
         }
+    }
+    private function formatTextLevels(){
+        foreach ($this->levels as $level) {
+            $index = array_search($level, self::LEVELS);
+            if ($index != false) {
+                $levelsIds[] = $index;
+            }
+        }
+
+        return $levelsIds;
     }
 
 }
