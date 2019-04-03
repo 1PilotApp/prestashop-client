@@ -7,16 +7,30 @@ use OnePilot\Response;
 
 class OnepilotErrorsModuleFrontController extends ModuleFrontController
 {
-    /** @var int */
-    const PAGINATION = 20;
 
     /** @var array */
     const LEVELS = array(
-        1 => 'info',
-        2 => 'warning',
-        3 => 'error',
-        4 => 'danger'
+        1 => 'Info',
+        2 => 'Warning',
+        3 => 'Error',
+        4 => 'Danger'
     );
+
+    /** @var int */
+    const PAGINATION = 20;
+    /** @var int */
+    private $perPage;
+    /** @var string date*/
+    private $from;
+    /** @var string date*/
+    private $to;
+    /** @var string */
+    private $levels;
+    /** @var string */
+    private $search;
+    /** @var int */
+    private $page;
+
 
     public function init()
     {
@@ -24,46 +38,25 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
         \OnePilot\Middlewares\Authentication::register();
 
         parent::init();
+        $this->perPage = Tools::getValue('per_page', self::PAGINATION);
+        $this->from = Tools::getValue('from');
+        $this->to = Tools::getValue('to');
+        $this->levels = is_array($this->levels = Tools::getValue('levels')) ? $this->levels : null;
+        $this->search = Tools::getValue('search');
+        $this->page = Tools::getValue('page', 1);
 
-        $from = Tools::getValue('from');
-        $to = Tools::getValue('to');
-        $levels = is_array($levels = Tools::getValue('levels')) ? $levels : null;
-        $search = Tools::getValue('search');
-        $page = Tools::getValue('page', 0);
+        $sqlTotal = new \DbQuery();
+        $sqlTotal->select('COUNT(*) as counter ');
+        $sqlTotal->from('log');
+        $this->applyFilters($sqlTotal);
+        $total = (int)\Db::getInstance()->executeS($sqlTotal)[0]['counter'];
 
         $sql = new \DbQuery();
         $sql->select('id_log as id, severity as level, message, date_add as date');
         $sql->from('log', 'l');
-
-        if ($from) {
-            $dateFrom = date('Y-m-d H:i:s', strtotime($from));
-            $sql->where("date_add > '$dateFrom'");
-        }
-
-        if ($to) {
-            $dateTo = date('Y-m-d H:i:s', strtotime($to));
-            $sql->where("date_add < '$dateTo'");
-        }
-
-        if ($levels) {
-            $levelsIds = array();
-            foreach ($levels as $level) {
-                $index = array_search($level, self::LEVELS);
-                if ($index != false) {
-                    $levelsIds[] = $index;
-                }
-            }
-
-            $sql->where("severity in (" . implode(',', $levelsIds) . ")");
-        }
-
-        if ($search) {
-            $sql->where("message like '%$search%'");
-        }
-
-        $sql->limit($this::PAGINATION, $page);
+        $this->applyFilters($sql);
+        $sql->limit($this::PAGINATION, (($this->page - 1) * $this->perPage));
         $sql->orderBy('date_add desc');
-
         $results = \Db::getInstance()->executeS($sql);
 
         foreach ($results as &$result) {
@@ -73,7 +66,43 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         Response::make([
             'data' => $results,
+            'current_page' => $this->page,
+            'from' => (($this->page - 1) * $this->perPage) + 1,
+            'last_page' => (int)ceil($total / $this->perPage),
+            'per_page' => $this->perPage,
+            'to' => (($this->page - 1) * $this->perPage) + $this->perPage,
+            'total' => $total,
         ]);
+    }
+
+    private function applyFilters($sql)
+    {
+        if ($this->from) {
+            $dateFrom = date('Y-m-d H:i:s', strtotime($this->from));
+            $sql->where("date_add > '$dateFrom'");
+        }
+
+        if ($this->to) {
+            $dateTo = date('Y-m-d H:i:s', strtotime($this->to));
+            $sql->where("date_add < '$dateTo'");
+        }
+
+        if ($this->levels) {
+            //do a method
+            $levelsIds = array();
+            foreach ($this->levels as $level) {
+                $index = array_search($level, self::LEVELS);
+                if ($index != false) {
+                    $levelsIds[] = $index;
+                }
+            }
+
+            $sql->where("severity in (" . implode(',', $levelsIds) . ")");
+        }
+
+        if ($this->search) {
+            $sql->where("message like '%$this->search%'");
+        }
     }
 
 }
