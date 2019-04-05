@@ -66,10 +66,10 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         Response::make([
             'data' => $results,
-            'current_page' => $this->page,
+            'current_page' => (int)$this->page,
             'from' => (($this->page - 1) * $this->perPage) + 1,
             'last_page' => (int)ceil($total / $this->perPage),
-            'per_page' => $this->perPage,
+            'per_page' => (int)$this->perPage,
             'to' => (($this->page - 1) * $this->perPage) + $this->perPage,
             'total' => $total,
         ]);
@@ -88,7 +88,6 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
         }
 
         if ($this->levels) {
-            //do a method
             $levelsIds = $this->formatTextLevels();
 
             $sql->where("severity in (" . implode(',', $levelsIds) . ")");

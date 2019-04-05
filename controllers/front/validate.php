@@ -7,9 +7,10 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
 {
     public function init()
     {
-        parent::init();
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
+
+        parent::init();
 
         \OnePilot\Response::make([
             'core'    => _PS_VERSION_,
