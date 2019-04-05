@@ -1,5 +1,7 @@
 <?php namespace OnePilot\Middlewares;
 
+use Exception;
+use OnePilot\Exceptions\OnePilotException;
 use OnePilot\Response;
 
 class Handler
@@ -41,26 +43,27 @@ class Handler
     }
 
     /**
-     * Catch Joomla exceptions and return informations in a JSON object
+     * Catch exceptions
      *
-     * @param mixed <Exception|Error> $e
+     * @param Exception $exception
      */
-    static public function exceptionHandler($e)
+    static public function exceptionHandler($exception)
     {
-        $error = new \stdClass();
-        $error->status = 'error';
-        $error->type = 'exception';
-
-        if ($e instanceof \Exception || (class_exists('Error') && $e instanceof \Error)) {
-            $error->message = $e->getMessage();
-            $error->file = $e->getFile();
-            $error->line = $e->getLine();
-        } else {
-            $error->message = 'unknown_error';
-            $error->file = __FILE__;
-            $error->line = __LINE__;
+        $httpCode = ($exception->getCode() >= 400 && $exception->getCode() < 600) ? $exception->getCode() : 500;
+        $content = [
+            'status'  => $httpCode,
+            'message' => $exception->getMessage(),
+            'data'    => [],
+            'type'    => 'exception',
+            'exception'=> get_class($exception)
+        ];
+        if (!empty($previous = $exception->getPrevious())) {
+            $content['data']['previous'] = $previous;
+        }
+        if ($exception instanceof OnePilotException && !empty($exceptionData = $exception->getData())) {
+            $content['data'] = array_merge($content['data'], $exceptionData);
         }
 
-        Response::make($error, $e->getCode() ?: 500);
+        Response::make($content, $httpCode);
     }
 }
