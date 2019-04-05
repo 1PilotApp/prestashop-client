@@ -49,8 +49,8 @@ class Onepilot extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('1pilot remote beta');
-        $this->description = $this->l('1pilot PrestaShop module beta ');
+        $this->displayName = $this->l('1Pilot');
+        $this->description = $this->l('1Pilot PrestaShop module');
 
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
     }
