@@ -39,7 +39,7 @@ class Onepilot extends Module
         $this->name = 'onepilot';
         $this->tab = 'administration';
         $this->version = '0.0.1';
-        $this->author = '1pilot';
+        $this->author = '1Pilot';
         $this->need_instance = 1;
 
         /**
@@ -57,8 +57,8 @@ class Onepilot extends Module
 
     public function install()
     {
-        if(empty(\Configuration::get('ONE_PILOT_API_KEY'))){
-            \Configuration::updateValue('ONE_PILOT_API_KEY', $this->generateKey());
+        if(empty(Configuration::get('ONE_PILOT_API_KEY'))){
+            Configuration::updateValue('ONE_PILOT_API_KEY', $this->generateKey());
         }
 
         return parent::install();
@@ -174,7 +174,7 @@ class Onepilot extends Module
     protected function getConfigFormValues()
     {
         return array(
-            'ONE_PILOT_API_KEY' => \Configuration::get('ONE_PILOT_API_KEY'),
+            'ONE_PILOT_API_KEY' => Configuration::get('ONE_PILOT_API_KEY'),
             'ONE_PILOT_SKIP_TIMESTAMP' => Configuration::get('ONE_PILOT_SKIP_TIMESTAMP', 0)
         );
     }
