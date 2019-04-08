@@ -29,7 +29,7 @@ class Handler
         $catchedErrors = [E_ERROR, E_PARSE];
 
         if ($lastError == null || !in_array($lastError['type'], $catchedErrors)) {
-            //return true;
+            return true;
         }
         $content = [
             'status'  => 500,

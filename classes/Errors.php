@@ -3,7 +3,7 @@
 class Errors
 {
 
-    private $levels;
+    private $levelsLabels;
     private $intervals;
 
     public function __construct()
@@ -14,7 +14,7 @@ class Errors
             30 * 24 * 60,
             ];
 
-        $this->levels =  [
+        $this->levelsLabels = [
             1 => 'Info',
             2 => 'Warning',
             3 => 'Error',
@@ -53,7 +53,7 @@ class Errors
         $logs = array();
         foreach ($results as $result) {
             $logs[] = array(
-                'level' => $this->levels[$result['severity']],
+                'level' => $this->levelsLabels[$result['severity']],
                 'total' => (int)$result['count']
             );
         }
