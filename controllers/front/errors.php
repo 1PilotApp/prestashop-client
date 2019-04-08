@@ -7,15 +7,8 @@ use OnePilot\Response;
 
 class OnepilotErrorsModuleFrontController extends ModuleFrontController
 {
-
-    /** @var array */
-    const LEVELS = array(
-        1 => 'Info',
-        2 => 'Warning',
-        3 => 'Error',
-        4 => 'Danger'
-    );
-
+    /** $var array */
+    private $levelsDefault;
     /** @var int */
     const PAGINATION = 20;
     /** @var int */
@@ -31,6 +24,15 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
     /** @var int */
     private $page;
 
+    public function __construct()
+    {
+        $this->levelsDefault = [
+            1 => 'Info',
+            2 => 'Warning',
+            3 => 'Error',
+            4 => 'Danger'
+        ];
+    }
 
     public function init()
     {
@@ -61,7 +63,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
 
         foreach ($results as &$result) {
             $index = $result['level'];
-            $result['level'] = self::LEVELS[$index];
+            $result['level'] = $this->levelsDefault[$index];
         }
 
         Response::make([
@@ -104,7 +106,7 @@ class OnepilotErrorsModuleFrontController extends ModuleFrontController
     private function getLevelIdFromLevels(){
         $levelsIds = array();
         foreach ($this->levels as $level) {
-            $index = array_search($level, self::LEVELS);
+            $index = array_search(ucfirst($level), $this->levelsDefault);
             if ($index != false) {
                 $levelsIds[] = $index;
             }

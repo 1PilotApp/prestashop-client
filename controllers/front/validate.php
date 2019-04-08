@@ -96,7 +96,6 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
         }
 
         return $filesProperties;
-
     }
 
     private function getExtras()

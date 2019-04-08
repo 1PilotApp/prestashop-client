@@ -2,19 +2,25 @@
 
 class Errors
 {
-    /** @var array intervals in minutes */
-    const LEVELS = array(
-        1 => 'Info',
-        2 => 'Warning',
-        3 => 'Error',
-        4 => 'Danger'
-    );
 
-    const INTERVALS = array(
-        1 * 24 * 60,
-        7 * 24 * 60,
-        30 * 24 * 60,
-    );
+    private $levels;
+    private $intervals;
+
+    public function __construct()
+    {
+        $this->intervals = [
+            1 * 24 * 60,
+            7 * 24 * 60,
+            30 * 24 * 60,
+            ];
+
+        $this->levels =  [
+            1 => 'Info',
+            2 => 'Warning',
+            3 => 'Error',
+            4 => 'Danger'
+        ];
+    }
 
     /**
      * Return the log activity of the last day,week,month by Level
@@ -23,7 +29,7 @@ class Errors
     public function overview()
     {
         $overview = array();
-        foreach (self::INTERVALS as $interval) {
+        foreach ($this->intervals as $interval) {
 
             $overview[$interval] = $this->last($interval);
         }
@@ -47,7 +53,7 @@ class Errors
         $logs = array();
         foreach ($results as $result) {
             $logs[] = array(
-                'level' => self::LEVELS[$result['severity']],
+                'level' => $this->levels[$result['severity']],
                 'total' => (int)$result['count']
             );
         }

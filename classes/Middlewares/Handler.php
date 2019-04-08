@@ -29,17 +29,18 @@ class Handler
         $catchedErrors = [E_ERROR, E_PARSE];
 
         if ($lastError == null || !in_array($lastError['type'], $catchedErrors)) {
-            return true;
+            //return true;
         }
+        $content = [
+            'status'  => 500,
+            'message' => $lastError['message'],
+            'type'    => 'error',
+            'error'   => $lastError['type'],
+            'file'    => $lastError['file'],
+            'line'    => $lastError['line'],
+        ];
 
-        $error = new \stdClass();
-        $error->status = 'error';
-        $error->type = $lastError['type'];
-        $error->message = $lastError['message'];
-        $error->file = $lastError['file'];
-        $error->line = $lastError['line'];
-
-        Response::make($error, 500);
+        Response::make($content, 500);
     }
 
     /**
@@ -51,11 +52,11 @@ class Handler
     {
         $httpCode = ($exception->getCode() >= 400 && $exception->getCode() < 600) ? $exception->getCode() : 500;
         $content = [
-            'status'  => $httpCode,
+            'status' => $httpCode,
             'message' => $exception->getMessage(),
-            'data'    => [],
-            'type'    => 'exception',
-            'exception'=> get_class($exception)
+            'data' => [],
+            'type' => 'exception',
+            'exception' => get_class($exception)
         ];
         if (!empty($previous = $exception->getPrevious())) {
             $content['data']['previous'] = $previous;
