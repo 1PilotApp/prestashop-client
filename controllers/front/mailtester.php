@@ -18,10 +18,10 @@ class OnepilotMailtesterModuleFrontController extends ModuleFrontController
      */
     public function init()
     {
-        parent::init();
-
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
+
+        parent::init();
 
         $email = Tools::getValue('email');
 
@@ -29,14 +29,13 @@ class OnepilotMailtesterModuleFrontController extends ModuleFrontController
             throw new OnePilotException('Missing email parameter', 400);
         }
 
-        $this->sendEmail($email);
-
-        /*if (!$this->sendEmail($email)) {
-            throw new OnePilotException('Error when sending email', 500);
-        }*/
+        try {
+            $this->sendEmail($email);
+        } catch (Exception $e) {
+            throw new OnePilotException('Error when sending email', 500, $e);
+        }
 
         Response::make([
-            'success' => true,
             'message' => 'Sent'
         ]);
 

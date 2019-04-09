@@ -7,15 +7,16 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
 {
     public function init()
     {
-        parent::init();
         \OnePilot\Middlewares\Handler::register();
         \OnePilot\Middlewares\Authentication::register();
+
+        parent::init();
 
         \OnePilot\Response::make([
             'core'    => _PS_VERSION_,
             'update'  => null,
-            'plugins' => $this->getExtensions(),
             'servers' => $this->getServers(),
+            'plugins' => $this->getExtensions(),
             'files'   => $this->getFilesProperties(),
             'errors'  => (new \OnePilot\Errors())->overview(),
             'extra'   => $this->getExtras(),
@@ -95,7 +96,6 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
         }
 
         return $filesProperties;
-
     }
 
     private function getExtras()

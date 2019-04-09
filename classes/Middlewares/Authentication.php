@@ -20,8 +20,8 @@ class Authentication
      */
     public function __construct()
     {
-        $this->hash = $_SERVER['HTTP_HASH'];
-        $this->stamp = $_SERVER['HTTP_STAMP'];
+        $this->hash = empty($_SERVER['HTTP_HASH']) ? null : $_SERVER['HTTP_HASH'];
+        $this->stamp = empty($_SERVER['HTTP_STAMP']) ? null : $_SERVER['HTTP_STAMP'];
         $this->private_key = \Configuration::get('ONE_PILOT_API_KEY');
 
         $this->checkAuthentication();
