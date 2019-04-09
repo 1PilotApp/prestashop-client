@@ -135,9 +135,8 @@ class Onepilot extends Module
                         'col' => 3,
                         'type' => 'text',
                         'prefix' => '<i class="icon icon-key"></i>',
-                        'desc' => $this->l('Enter your api key'),
                         'name' => 'ONE_PILOT_API_KEY',
-                        'label' => $this->l('Api key'),
+                        'label' => $this->l('1Pilot private key'),
                     ),
                     array(
                         'col' => 3,
@@ -191,15 +190,15 @@ class Onepilot extends Module
         }
     }
 
-    private function generateKey(){
-
+    private function generateKey()
+    {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randstring = '';
+
         for ($i = 0; $i < 20; $i++) {
             $randstring += $characters[rand(0, strlen($characters)-1)];
         }
+
         return md5($randstring);
-
     }
-
 }
