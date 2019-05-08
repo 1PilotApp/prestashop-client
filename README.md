@@ -56,7 +56,7 @@ We searched the galaxy for a robust answer to our challenges, and found none. So
 
 ### PrestaShop 1.7
 
-1. [Download latest release](https://github.com/1PilotApp/prestashop-client/releases/latest)
+1. [Download latest release](https://1pilot.io/download/client/prestashop)
 2. Connect to your site administration panel
 3. Go to Modules page
 4. Click on "Upload a module" and upload previously downloaded 1Pilot client
@@ -66,7 +66,7 @@ We searched the galaxy for a robust answer to our challenges, and found none. So
 
 ### PrestaShop 1.6
 
-1. [Download latest release](https://github.com/1PilotApp/prestashop-client/releases/latest)
+1. [Download latest release](https://1pilot.io/download/client/prestashop)
 2. Connect to your site administration panel
 3. Go to Modules page
 4. Click on "Add new module" and upload previously downloaded 1Pilot client
