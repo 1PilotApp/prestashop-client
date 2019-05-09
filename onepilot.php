@@ -64,13 +64,6 @@ class Onepilot extends Module
         return parent::install();
     }
 
-    public function uninstall()
-    {
-
-
-        return parent::uninstall();
-    }
-
     /**
      * Load the configuration form
      */

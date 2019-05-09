@@ -1,4 +1,8 @@
 <?php
+
+use OnePilot\Errors;
+use OnePilot\Response;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -12,13 +16,12 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
 
         parent::init();
 
-        \OnePilot\Response::make([
-            'core'    => _PS_VERSION_,
-            'update'  => null,
+        Response::make([
+            'core'    => ['version' => _PS_VERSION_, 'new_version' => null,],
             'servers' => $this->getServers(),
             'plugins' => $this->getExtensions(),
             'files'   => $this->getFilesProperties(),
-            'errors'  => (new \OnePilot\Errors())->overview(),
+            'errors'  => (new Errors())->overview(),
             'extra'   => $this->getExtras(),
         ]);
     }
@@ -26,6 +29,8 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
     private function getExtensions()
     {
         $activeModules = [];
+
+        $this->refreshModulesCache();
         $modules = Module::getModulesOnDisk();
 
         foreach ($modules as $module) {
@@ -33,20 +38,16 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
                 continue;
             }
 
-            $new_version = null;
-            if ($module->version < $module->database_version) {
-                $new_version = $module->database_version;
-            }
+            $newVersion = isset($module->version_addons) ? (string)$module->version_addons[0] : null;
 
             $activeModules[] = [
-                "version"     => $module->version,
-                "new_version" => $new_version,
-                "name"        => $module->displayName,
-                "code"        => $module->name,
-                "type"        => "plugin",
-                "active"      => $module->active,
+                'version'     => $module->version,
+                'new_version' => $newVersion,
+                'name'        => $module->displayName,
+                'code'        => $module->name,
+                'type'        => 'module',
+                'active'      => $module->active,
             ];
-
         }
 
         return $activeModules;
@@ -56,17 +57,15 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
     {
         $serverWeb = $_SERVER['SERVER_SOFTWARE'] ?: getenv('SERVER_SOFTWARE') ?: 'NOT_FOUND';
 
-        return
-            [
-                'php'     => phpversion(),
-                'server'  => $serverWeb,
-                'mysql'   => Db::getInstance()->executeS("SHOW VARIABLES LIKE 'version'")[0]['Value'],
-            ];
+        return [
+            'php'    => phpversion(),
+            'server' => $serverWeb,
+            'mysql'  => Db::getInstance()->executeS("SHOW VARIABLES LIKE 'version'")[0]['Value'],
+        ];
     }
 
     private function getFilesProperties()
     {
-
         $filesProperties = [];
 
         //files to check
@@ -77,7 +76,7 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
 
         foreach ($files as $file) {
             $absolutePath = _PS_ROOT_DIR_ . '/' . $file;
-            
+
             if (file_exists($absolutePath)) {
                 $fp = fopen($absolutePath, 'r');
                 $fstat = fstat($fp);
@@ -86,12 +85,14 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
             } elseif ($file != _PS_ROOT_DIR_ . '/.htaccess') { //If not, we say that the file can't be found
                 $checksum = $fstat['size'] = $fstat['mtime'] = 'NOT_FOUND';
             }
+
             $file = [
                 'rootpath'         => $file,
                 'size'             => $fstat['size'],
                 'modificationtime' => $fstat['mtime'],
                 'checksum'         => $checksum,
             ];
+
             $filesProperties[] = $file;
         }
 
@@ -106,5 +107,21 @@ class OnepilotValidateModuleFrontController extends ModuleFrontController
             'debug_mode'      => _PS_MODE_DEV_,
             'cms.activeTheme' => $context->shop->theme_name,
         ];
+    }
+
+    /**
+     * @see AdminModulesControllerCore::ajaxProcessRefreshModuleList
+     */
+    private function refreshModulesCache()
+    {
+        file_put_contents(
+            _PS_ROOT_DIR_ . Module::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST,
+            Tools::addonsRequest('native')
+        );
+
+        file_put_contents(
+            _PS_ROOT_DIR_ . Module::CACHE_FILE_MUST_HAVE_MODULES_LIST,
+            Tools::addonsRequest('must-have')
+        );
     }
 }
