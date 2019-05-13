@@ -38,7 +38,7 @@ class Onepilot extends Module
     {
         $this->name = 'onepilot';
         $this->tab = 'administration';
-        $this->version = '0.0.1';
+        $this->version = '1.0.0';
         $this->author = '1Pilot';
         $this->need_instance = 1;
 
