@@ -30,6 +30,9 @@ if (!defined('_PS_VERSION_')) {
 
 require_once 'autoloader.php';
 
+/**
+ * @mixin ModuleCore
+ */
 class Onepilot extends Module
 {
     protected $config_form = false;
@@ -42,9 +45,7 @@ class Onepilot extends Module
         $this->author = '1Pilot';
         $this->need_instance = 1;
 
-        /**
-         * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
-         */
+        // set to true if your module is compliant with bootstrap (PrestaShop 1.6)
         $this->bootstrap = true;
 
         parent::__construct();
@@ -52,12 +53,12 @@ class Onepilot extends Module
         $this->displayName = $this->l('1Pilot');
         $this->description = $this->l('1Pilot PrestaShop module');
 
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => _PS_VERSION_];
     }
 
     public function install()
     {
-        if(empty(Configuration::get('ONE_PILOT_API_KEY'))){
+        if (empty(Configuration::get('ONE_PILOT_API_KEY'))) {
             Configuration::updateValue('ONE_PILOT_API_KEY', $this->generateKey());
         }
 
@@ -81,6 +82,7 @@ class Onepilot extends Module
         $this->context->smarty->assign('module_dir', $this->_path);
 
         $output .= $this->renderForm();
+
         return $output;
     }
 
@@ -103,13 +105,13 @@ class Onepilot extends Module
             . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
-        $helper->tpl_vars = array(
+        $helper->tpl_vars = [
             'fields_value' => $this->getConfigFormValues(), /* Add values for your inputs */
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
-        );
+            'languages'    => $this->context->controller->getLanguages(),
+            'id_language'  => $this->context->language->id,
+        ];
 
-        return $helper->generateForm(array($this->getConfigForm()));
+        return $helper->generateForm([$this->getConfigForm()]);
     }
 
     /**
@@ -117,47 +119,47 @@ class Onepilot extends Module
      */
     protected function getConfigForm()
     {
-        return array(
-            'form' => array(
-                'legend' => array(
+        return [
+            'form' => [
+                'legend' => [
                     'title' => $this->l('Settings'),
-                    'icon' => 'icon-cogs',
-                ),
-                'input' => array(
-                    array(
-                        'col' => 3,
-                        'type' => 'text',
+                    'icon'  => 'icon-cogs',
+                ],
+                'input'  => [
+                    [
+                        'col'    => 3,
+                        'type'   => 'text',
                         'prefix' => '<i class="icon icon-key"></i>',
-                        'name' => 'ONE_PILOT_API_KEY',
-                        'label' => $this->l('1Pilot private key'),
-                    ),
-                    array(
-                        'col' => 3,
-                        'type' => 'switch',
+                        'name'   => 'ONE_PILOT_API_KEY',
+                        'label'  => $this->l('1Pilot private key'),
+                    ],
+                    [
+                        'col'     => 3,
+                        'type'    => 'switch',
                         'is_bool' => true,
-                        'desc' => $this->l('Skip timestamp validation ?'),
-                        'name' => 'ONE_PILOT_SKIP_TIMESTAMP',
-                        'label' => $this->l('Skip timestamp'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
+                        'desc'    => $this->l('Skip timestamp validation ?'),
+                        'name'    => 'ONE_PILOT_SKIP_TIMESTAMP',
+                        'label'   => $this->l('Skip timestamp'),
+                        'values'  => [
+                            [
+                                'id'    => 'active_on',
                                 'value' => 1,
-                                'label' => $this->l('Yes')
-                            ),
-                            array(
-                                'id' => 'active_off',
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'id'    => 'active_off',
                                 'value' => 0,
-                                'label' => $this->l('No')
-                            )
-                        ),
-                    ),
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                    ],
 
-                ),
-                'submit' => array(
+                ],
+                'submit' => [
                     'title' => $this->l('Save'),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
@@ -165,10 +167,10 @@ class Onepilot extends Module
      */
     protected function getConfigFormValues()
     {
-        return array(
-            'ONE_PILOT_API_KEY' => Configuration::get('ONE_PILOT_API_KEY'),
-            'ONE_PILOT_SKIP_TIMESTAMP' => Configuration::get('ONE_PILOT_SKIP_TIMESTAMP', 0)
-        );
+        return [
+            'ONE_PILOT_API_KEY'        => Configuration::get('ONE_PILOT_API_KEY'),
+            'ONE_PILOT_SKIP_TIMESTAMP' => Configuration::get('ONE_PILOT_SKIP_TIMESTAMP', 0),
+        ];
     }
 
     /**
@@ -176,20 +178,20 @@ class Onepilot extends Module
      */
     protected function postProcess()
     {
-        $form_values = $this->getConfigFormValues();
+        $configs = $this->getConfigFormValues();
 
-        foreach (array_keys($form_values) as $key) {
+        foreach (array_keys($configs) as $key) {
             Configuration::updateValue($key, Tools::getValue($key));
         }
     }
 
     private function generateKey()
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randstring = '';
 
         for ($i = 0; $i < 20; $i++) {
-            $randstring += $characters[rand(0, strlen($characters)-1)];
+            $randstring += $chars[rand(0, strlen($chars) - 1)];
         }
 
         return md5($randstring);

@@ -8,8 +8,6 @@ use OnePilot\Response;
 
 class OnepilotMailtesterModuleFrontController extends ModuleFrontController
 {
-
-
     /**
      * Return all client data separated into different array items
      *
@@ -36,16 +34,36 @@ class OnepilotMailtesterModuleFrontController extends ModuleFrontController
         }
 
         Response::make([
-            'message' => 'Sent'
+            'message' => 'Sent',
         ]);
 
     }
 
     private function sendEmail($email)
     {
+        Mail::Send(
+            (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
+            'contact', // email template file to be use
+            'Test send by 1Pilot.io for ensure emails are properly sent', // email subject
+            [
+                '{email}'   => Configuration::get('PS_SHOP_EMAIL'),
+                '{message}' => nl2br($this->getMessage()),
+            ],
+            $email, // receiver email address
+            '1Pilot', //receiver name
+            Configuration::get('PS_SHOP_EMAIL'), //Sender email
+            Configuration::get("PS_SHOP_NAME") // Sender name
+        );
+    }
+
+    /**
+     * @return string
+     */
+    private function getMessage()
+    {
         $siteUrl = Tools::getHttpHost(true) . __PS_BASE_URI__;
 
-        $message = <<<EOF
+        return <<<EOF
 This email was automatically sent by the 1Pilot Client installed on $siteUrl.
 
 Ground control to Major Tom
@@ -100,21 +118,5 @@ Can you...
 Space Oddity
 David Bowie
 EOF;
-
-         Mail::Send(
-            (int)(Configuration::get('PS_LANG_DEFAULT')), // defaut language id
-            'contact', // email template file to be use
-            'Test send by 1Pilot.io for ensure emails are properly sent', // email subject
-            array(
-                '{email}' => Configuration::get('PS_SHOP_EMAIL'),
-                '{message}' => nl2br($message)
-            ),
-            $email, // receiver email address
-            '1Pilot', //receiver name
-            Configuration::get('PS_SHOP_EMAIL'), //Sender email
-            Configuration::get("PS_SHOP_NAME") // Sender name
-        );
-
-
     }
 }
