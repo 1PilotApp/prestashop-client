@@ -191,7 +191,7 @@ class Onepilot extends Module
         $randstring = '';
 
         for ($i = 0; $i < 20; $i++) {
-            $randstring += $chars[rand(0, strlen($chars) - 1)];
+            $randstring .= $chars[rand(0, strlen($chars) - 1)];
         }
 
         return md5($randstring);
